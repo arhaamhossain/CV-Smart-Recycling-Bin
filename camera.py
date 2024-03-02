@@ -1,21 +1,21 @@
+# picamera.py
+import cv2
+from picamera import PiCamera
+from picamera.array import PiRGBArray
 import time
-import picamera
 
-def capture_image():
-    try:
-        with picamera.PiCamera() as camera:
-            # Adjust camera settings if needed
-            # camera.resolution = (width, height)
-            # camera.rotation = rotation_angle
-            
-            # Wait for the camera to warm up
-            time.sleep(2)
-            
-            # Capture an image
-            camera.capture('garbage_image.jpg')
-            print("Image captured successfully!")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-if __name__ == "__main__":
-    capture_image()
+class PiCameraWrapper:
+    def __init__(self):
+        self.camera = PiCamera()
+        self.camera.resolution = (640, 480)  # Set camera resolution
+        self.raw_capture = PiRGBArray(self.camera, size=(640, 480))
+        time.sleep(0.1)  # Allow camera to warm up
+    
+    def capture_frame(self):
+        self.camera.capture(self.raw_capture, format="bgr")
+        image = self.raw_capture.array
+        self.raw_capture.truncate(0)  # Clear the stream
+        return image
+    
+    def close(self):
+        self.camera.close()
