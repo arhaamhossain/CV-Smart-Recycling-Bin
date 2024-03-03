@@ -25,10 +25,24 @@ GPIO.setup(white_led_pin, GPIO.OUT)
 # Set ground pin to low (ground)
 GPIO.output(ground_pin, GPIO.LOW)
 
-GPIO.output(buzzer_pin, GPIO.HIGH)
-GPIO.output(blue_led_pin, GPIO.HIGH)
-GPIO.output(green_led_pin, GPIO.HIGH)
-GPIO.output(red_led_pin, GPIO.HIGH)
-GPIO.output(yellow_led_pin, GPIO.HIGH)
-GPIO.output(white_led_pin, GPIO.HIGH)
-time.sleep(1)
+# Loop until 'q' key is pressed
+while True:
+    GPIO.output(buzzer_pin, GPIO.HIGH)
+    GPIO.output(blue_led_pin, GPIO.HIGH)
+    GPIO.output(green_led_pin, GPIO.HIGH)
+    GPIO.output(red_led_pin, GPIO.HIGH)
+    GPIO.output(yellow_led_pin, GPIO.HIGH)
+    GPIO.output(white_led_pin, GPIO.HIGH)
+    time.sleep(1)
+    
+    GPIO.output(buzzer_pin, GPIO.LOW)
+    GPIO.output(blue_led_pin, GPIO.LOW)
+    GPIO.output(green_led_pin, GPIO.LOW)
+    GPIO.output(red_led_pin, GPIO.LOW)
+    GPIO.output(yellow_led_pin, GPIO.LOW)
+    GPIO.output(white_led_pin, GPIO.LOW)
+    time.sleep(1)
+    
+    # Check for key press
+    if input() == 'q':
+        break
