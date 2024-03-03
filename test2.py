@@ -2,7 +2,7 @@ import cv2
 from inference import get_model
 import supervision as sv
 import os
-
+from apikey import akey
 # Create a directory to save captured images if it doesn't exist
 image_folder = "captured_images"
 os.makedirs(image_folder, exist_ok=True)
@@ -47,7 +47,7 @@ while True:
             image = cv2.imread(image_path)
 
             # Load the pre-trained model
-            model = get_model(model_id="trash-detection-kcsnu/4", api_key="N6e65K6iVSSQWe5WxUJo")
+            model = get_model(model_id="trash-detection-kcsnu/4", api_key= akey)
 
             # Run inference on the captured image
             results = model.infer(image)

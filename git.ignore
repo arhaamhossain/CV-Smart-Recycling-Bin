@@ -6,7 +6,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-test2.py
+apikey.py
 
 # C extensions
 *.so
