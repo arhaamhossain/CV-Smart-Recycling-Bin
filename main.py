@@ -1,38 +1,33 @@
 import cv2
-from ultralytics import YOLO
+import subprocess
+from configcv import *
+# Define the command to start the inference server
+start_server_cmd = "inference server start"
 
-# Load a pretrained YOLOv8n model
-model = YOLO('yolov8n.pt')
+# Start the inference server
+subprocess.run(start_server_cmd, shell=True)
 
-# Initialize the video capture object for the laptop camera
-cap = cv2.VideoCapture(0)  # Use 0 for the default camera
+# Initialize the camera
+cap = cv2.VideoCapture(0)  # Use the default camera (index 0)
 
-# Check if the camera opened successfully
-if not cap.isOpened():
-    print("Error: Unable to open the camera.")
-    exit()
-
-# Main loop to capture frames from the camera and perform inference
+# Loop to continuously capture frames and run inference
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
 
-    # Check if the frame was captured successfully
-    if not ret:
+    if ret:
+        # Run inference on the captured frame
+        inference_cmd = f"inference infer {frame} --api-key N6e65K6iVSSQWe5WxUJo --project-id trash-detection-kcsnu --model-version 4"
+        subprocess.run(inference_cmd, shell=True)
+        
+        # Display the frame
+        cv2.imshow('Camera', frame)
+
+        # Check for 'q' key to quit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    else:
         print("Error: Unable to capture frame.")
-        break
-
-    # Run inference on the frame using the YOLOv8n model
-    results = model(frame)  # list of Results objects
-
-    # Render the results on the frame
-    annotated_frame = results.render()
-
-    # Display the annotated frame
-    cv2.imshow('YOLOv8n Object Detection', annotated_frame, device = 'cpu')
-
-    # Check for the 'q' key to quit
-    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 # Release the camera and close all OpenCV windows
