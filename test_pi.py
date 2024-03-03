@@ -23,9 +23,6 @@ GPIO.setup(red_led_pin, GPIO.OUT)
 GPIO.setup(yellow_led_pin, GPIO.OUT)
 GPIO.setup(white_led_pin, GPIO.OUT)
 
-# Set ground pin to low (ground)
-GPIO.output(ground_pin, GPIO.LOW)
-
 # Loop until 'q' key is pressed
 while True:
     GPIO.output(buzzer_pin, GPIO.HIGH)
