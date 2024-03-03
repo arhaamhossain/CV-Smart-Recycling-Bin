@@ -1,63 +1,74 @@
-from picamera import PiCamera
-from time import sleep
-import os
+import cv2
 from inference import get_model
 import supervision as sv
+import os
 from apikey import akey
+
 # Create a directory to save captured images if it doesn't exist
 image_folder = "captured_images"
 os.makedirs(image_folder, exist_ok=True)
 
-# Initialize the PiCamera
-camera = PiCamera()
+# Open the webcam
+cap = cv2.VideoCapture(1)
 
 # Define the key to start/stop capturing images
-start_stop_key = 's'  # Change to the desired key code, 's' key by default
-exit_key = 'q'  # Change to the desired exit key code, 'q' key by default
+start_stop_key = ord('s')  # Change to the desired key code, 's' key by default
+exit_key = ord('q')  # Change to the desired exit key code, 'q' key by default
 
-# Load the pre-trained model
-model = get_model(model_id="trash-detection-kcsnu/4", api_key=akey)
-
-# Capture and save images
+# Define the number of images to capture
 capturing = False
-image_counter = 1  # Counter to keep track of captured images
 while True:
-    # Capture an image when the start_stop_key is pressed
-    if input("Press '{}' to capture an image or '{}' to stop capturing: ".format(start_stop_key, exit_key)) == start_stop_key:
-        capturing = True
-    else:
+    # Capture a single frame
+    ret, frame = cap.read()
+
+    key = cv2.waitKey(1) & 0xFF
+    
+    # Start/Stop capturing images when the start_stop_key is pressed
+    if key == start_stop_key:
+        capturing = not capturing
+        if capturing:
+            print("Capturing started. Press 's' to stop.")
+        else:
+            print("Capturing stopped. Press 's' to start again.")
+
+    cv2.imshow("Live Webcam Feed", frame)
+    # Capture images when capturing is enabled
+    if capturing:
+        for i in range(1):
+            # Define the path to save the captured image
+            image_path = os.path.join(image_folder, f"captured_image_{i}.jpg")
+
+            # Save the captured image to the specified path
+            cv2.imwrite(image_path, frame)
+
+            # Load the captured image for inference
+            image = cv2.imread(image_path)
+
+            # Load the pre-trained model
+            model = get_model(model_id="trash-detection-kcsnu/4", api_key=akey)
+
+            # Run inference on the captured image
+            results = model.infer(image)
+
+            # Create supervision annotators
+            bounding_box_annotator = sv.BoundingBoxAnnotator()
+            label_annotator = sv.LabelAnnotator()
+
+            # Load the results into the supervision Detections API
+            detections = sv.Detections.from_inference(results[0].dict(by_alias=True, exclude_none=True))
+
+            # Annotate the image with the inference results
+            annotated_image = bounding_box_annotator.annotate(scene=image, detections=detections)
+            annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections)
+
+            # Display the annotated image
+            cv2.imshow(f"Captured Image {i+1} with Detections", annotated_image)
+         
+    # Exit the loop if the exit_key is pressed
+    if key == exit_key:
+        cap.release()
+        cv2.destroyAllWindows()
         break
 
-    # Capture an image
-    if capturing:
-        # Capture an image from the camera
-        image_path = os.path.join(image_folder, f"captured_image_{image_counter}.jpg")
-        camera.capture(image_path)
-        print(f"Image {image_counter} captured successfully!")
-
-        # Load the captured image for inference
-        image = sv.Scene.from_file(image_path)
-
-        # Run inference on the captured image
-        results = model.infer(image)
-
-        # Create supervision annotators
-        bounding_box_annotator = sv.BoundingBoxAnnotator()
-        label_annotator = sv.LabelAnnotator()
-
-        # Load the results into the supervision Detections API
-        detections = sv.Detections.from_inference(results[0].dict(by_alias=True, exclude_none=True))
-
-        # Annotate the image with the inference results
-        annotated_image = bounding_box_annotator.annotate(scene=image, detections=detections)
-        annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections)
-
-        # Save the annotated image
-        annotated_image_path = os.path.join(image_folder, f"annotated_image_{image_counter}.jpg")
-        annotated_image.to_file(annotated_image_path)
-        print(f"Annotated image {image_counter} saved successfully!")
-
-        image_counter += 1
-
-# Close the PiCamera
-camera.close()
+cap.release()
+cv2.destroyAllWindows()
