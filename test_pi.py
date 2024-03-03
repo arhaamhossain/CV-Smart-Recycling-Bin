@@ -2,7 +2,8 @@ import RPi.GPIO as GPIO
 import time
 
 # Set pin numbering mode
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
 
 # Define pin numbers
 ground_pin = 6
@@ -42,7 +43,7 @@ while True:
     GPIO.output(yellow_led_pin, GPIO.LOW)
     GPIO.output(white_led_pin, GPIO.LOW)
     time.sleep(1)
-    
+
     # Check for key press
     if input() == 'q':
         break
