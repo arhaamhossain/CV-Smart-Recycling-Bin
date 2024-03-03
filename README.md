@@ -1,2 +1,2 @@
 # CV-Trash-Detection-Sorting
-Computer vision enabled trash detection and sorting system. 
+A Raspberry PI-based object recognition system that will use computer vision to detect objects being recycled in a bin. The system will identify and categorize what type of object is being thrown into a bin (e.g., paper, plastic, and metal) and sort it into the correct bin. LEDs will be used to indicate that the system has successfully identified and sorted the object. 
