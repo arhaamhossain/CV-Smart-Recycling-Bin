@@ -15,6 +15,7 @@ exit_key = 'q'  # Change to the desired exit key code, 'q' key by default
 
 # Capture and save images
 capturing = False
+image_counter = 1  # Counter to keep track of captured images
 while True:
     # Capture an image when the start_stop_key is pressed
     if input("Press '{}' to capture an image or '{}' to stop capturing: ".format(start_stop_key, exit_key)) == start_stop_key:
@@ -25,9 +26,10 @@ while True:
     # Capture an image
     if capturing:
         # Capture an image from the camera
-        image_path = os.path.join(image_folder, "captured_image.jpg")
+        image_path = os.path.join(image_folder, f"captured_image_{image_counter}.jpg")
         camera.capture(image_path)
-        print("Image captured successfully!")
+        print(f"Image {image_counter} captured successfully!")
+        image_counter += 1
 
 # Close the PiCamera
 camera.close()
