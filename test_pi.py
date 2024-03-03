@@ -15,7 +15,6 @@ yellow_led_pin = 11
 white_led_pin = 13
 
 # Configure pins
-GPIO.setup(ground_pin, GPIO.OUT)
 GPIO.setup(buzzer_pin, GPIO.OUT)
 GPIO.setup(blue_led_pin, GPIO.OUT)
 GPIO.setup(green_led_pin, GPIO.OUT)
